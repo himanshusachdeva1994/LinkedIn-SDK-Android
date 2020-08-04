@@ -86,13 +86,16 @@ class RetrieveBasicProfileAsyncTask extends AsyncTask<String, Void, Boolean> {
             String firstNameKey = language + "_" + country;
             String linkedInUserFirstName = jsonObject.getJSONObject("firstName").getJSONObject("localized").getString(firstNameKey);
             String linkedInUserLastName = jsonObject.getJSONObject("lastName").getJSONObject("localized").getString(firstNameKey);
-            String linkedInUserProfile = jsonObject.getJSONObject("profilePicture").getJSONObject("displayImage~").getJSONArray("elements").getJSONObject(0).getJSONArray("identifiers").getJSONObject(0).getString("identifier");
+
+            // Handling JSON Exception due to 'profilePicture' key not found in case user hasn't set a profile image
+            if (jsonObject.has("profilePicture")) {
+                String linkedInUserProfile = jsonObject.getJSONObject("profilePicture").getJSONObject("displayImage~").getJSONArray("elements").getJSONObject(0).getJSONArray("identifiers").getJSONObject(0).getString("identifier");
+                linkedInUser.setProfileUrl(linkedInUserProfile);
+            }
 
             linkedInUser.setId(linkedInUserId);
             linkedInUser.setFirstName(linkedInUserFirstName);
             linkedInUser.setLastName(linkedInUserLastName);
-            linkedInUser.setProfileUrl(linkedInUserProfile);
-
         } else {
             Log.e(TAG, "Failed To Retrieve Basic Profile");
         }
